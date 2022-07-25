@@ -45,21 +45,24 @@ const Web3ModalProvider = (props: Web3ModalProviderPropType) => {
     setWeb3Modal(web3Modal)
   }, [])
 
-  const reset = () => {
+  const reset = useCallback(() => {
     setWeb3(null)
     setAccount(null)
     setConnected(false)
     setChainId(null)
-  }
+  }, [])
 
   const subscribeProvider = useCallback(
     (provider: any, web3: Web3) => {
       if (!provider) return
 
-      provider.on('disconnect', reset)
+      provider.on('disconnect', () => {
+        reset()
+      })
 
       provider.on('accountsChanged', (accounts: string[]) => {
-        setAccount(web3.utils.toChecksumAddress(accounts[0]))
+        if (accounts.length == 0) reset()
+        else setAccount(web3.utils.toChecksumAddress(accounts[0]))
       })
 
       provider.on('chainChanged', (chainId: number) => {
@@ -83,7 +86,6 @@ const Web3ModalProvider = (props: Web3ModalProviderPropType) => {
 
     const _accounts = await _web3.eth.getAccounts()
     const _account = _web3.utils.toChecksumAddress(_accounts[0])
-    const _networkId = await _web3.eth.net.getId()
     const _chainId = await _web3.eth.getChainId()
 
     setAccount(_account)
@@ -92,7 +94,7 @@ const Web3ModalProvider = (props: Web3ModalProviderPropType) => {
   }, [web3Modal, subscribeProvider])
 
   useEffect(() => {
-    if (web3Modal && web3Modal.cachedProvider) {
+    if (web3Modal /* && web3Modal.cachedProvider*/) {
       connect()
     }
     window.ethereum
