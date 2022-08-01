@@ -43,7 +43,8 @@ const Web3Provider = ({ children }: Web3ProviderPropType) => {
     const provider: any = web3.currentProvider
 
     provider.on('accountsChanged', (accounts: string[]) => {
-      setAccount(accounts[0])
+      if (accounts.length === 0) reset()
+      else setAccount(web3.utils.toChecksumAddress(accounts[0]))
     })
 
     provider.on('chainChanged', (chainId: number) => {
