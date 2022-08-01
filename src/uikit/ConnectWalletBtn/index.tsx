@@ -1,10 +1,14 @@
-import { Web3ModalContext } from '../../providers'
+import { Web3Context } from '../../providers'
 import { useContext } from 'react'
 
 function ConnectWalletBtn() {
-  const { connected, account } = useContext(Web3ModalContext)
+  const { connected, account, connect } = useContext(Web3Context)
 
-  return <button>{connected ? account : 'Connect'}</button>
+  return (
+    <button onClick={() => connect!()}>
+      {connected ? account : 'Connect'}
+    </button>
+  )
 }
 
 export default ConnectWalletBtn
