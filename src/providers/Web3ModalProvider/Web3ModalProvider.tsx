@@ -61,7 +61,7 @@ const Web3ModalProvider = (props: Web3ModalProviderPropType) => {
       })
 
       provider.on('accountsChanged', (accounts: string[]) => {
-        if (accounts.length == 0) reset()
+        if (accounts.length === 0) reset()
         else setAccount(web3.utils.toChecksumAddress(accounts[0]))
       })
 
