@@ -3,20 +3,22 @@ import Web3 from 'web3'
 
 interface IWeb3Context {
   account: string | null
-  connect: Function | null
+  connect: Function
   connected: boolean
   chainId: number | null
-  disconnect: Function | null
+  disconnect: Function
   web3: Web3 | null
+  switchChain: Function
 }
 
 export const Web3Context = createContext<IWeb3Context>({
   account: null,
-  connect: null,
+  connect: () => {},
   connected: false,
   chainId: null,
-  disconnect: null,
+  disconnect: () => {},
   web3: null,
+  switchChain: (_: string | number) => {},
 })
 
 type Web3ProviderPropType = {
@@ -72,9 +74,33 @@ const Web3Provider = ({ children }: Web3ProviderPropType) => {
     reset()
   }, [web3, reset])
 
+  const switchChain = useCallback(async (chainId: number) => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x' + chainId.toString(16) }],
+      })
+      console.log('You have switched to the right network')
+    } catch (switchError: any) {
+      // The network has not been added to MetaMask
+      if (switchError.code === 4902) {
+        console.log('Please add the Polygon network to MetaMask')
+      }
+      console.log('Cannot switch to the network')
+    }
+  }, [])
+
   return (
     <Web3Context.Provider
-      value={{ account, connect, disconnect, chainId, connected, web3 }}
+      value={{
+        account,
+        connect,
+        disconnect,
+        chainId,
+        connected,
+        web3,
+        switchChain,
+      }}
     >
       {children}
     </Web3Context.Provider>

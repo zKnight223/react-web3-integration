@@ -2,12 +2,22 @@ import { Web3Context } from '../../providers'
 import { useContext } from 'react'
 
 function ConnectWalletBtn() {
-  const { connected, account, connect } = useContext(Web3Context)
+  const { connected, account, connect, chainId, switchChain } =
+    useContext(Web3Context)
 
   return (
-    <button onClick={() => connect!()}>
-      {connected ? account : 'Connect'}
-    </button>
+    <div>
+      <button onClick={() => connect!()}>
+        {connected ? account : 'Connect'}
+      </button>
+      <button
+        onClick={() => {
+          Number(chainId) === 1 ? switchChain(0x38) : switchChain(0x1)
+        }}
+      >
+        {chainId}
+      </button>
+    </div>
   )
 }
 
